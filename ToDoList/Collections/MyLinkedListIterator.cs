@@ -14,7 +14,7 @@ public class MyLinkedListIterator<T> : IMyIterator<T>
 
     public T Next()
     {
-        if (_current == null)
+        if (!HasNext())
             throw new InvalidOperationException("No more elements in the collection.");
 
         T value = _current.Value;
