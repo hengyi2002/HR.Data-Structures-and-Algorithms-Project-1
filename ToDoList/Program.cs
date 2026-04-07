@@ -8,8 +8,16 @@
 
     public static void Main()
     {
-        TaskView.PrintTasks(DEMO_USER, DEMO_DATA);
+        // TaskView.PrintTasksDateSplit(DEMO_USER, DEMO_DATA);
+        // TaskView.PrintTasksKanBan(DEMO_USER, DEMO_DATA);
 
-        MenuView.RunMenu();
+        bool ExitProgram = false;
+
+        while (!ExitProgram)
+        {
+            ExitProgram = MenuView.Main();
+        }
+
+        MenuView.GoodByeMessage();
     }
 }

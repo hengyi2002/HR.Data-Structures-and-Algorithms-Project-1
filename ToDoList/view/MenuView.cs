@@ -1,58 +1,75 @@
-public class MenuView
+using Spectre.Console;
+using Spectre.Console.Rendering;
+
+public class MenuView()
 {
-    public static void RunMenu()
+    public static bool Main()
     {
-        while (true)
+        AnsiConsole.Clear();
+
+        AnsiConsole.Write(Align.Center(Logo()));
+
+        switch(AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .Title($"Good {TimeGreeting()}, What would you like to do today?")
+                .AddChoices("View currently doing tasks", "View kanban", "View specific boards", "View all tasks in system", "exit program")))
         {
-            PrintMenu();
-
-            string option = Prompt("Select an option: ");
-            switch (option)
-            {
-                case "1":
-                    // View Tasks
-
-                    break;
-                case "2":
-                    // Add Task
-
-                    break;
-                case "3":
-                    // Update Task
-
-                    break;
-                case "4":
-                    // Delete Task
-                    string removIdStr = Prompt("Enter the ID of the task to delete: ");
-
-                    break;
-                case "5":
-                    // Toggle Task Completion
-                    break;
-                case "6":
-                    Console.WriteLine("Exiting...");
-                    return;
-                default:
-                    Console.WriteLine("Invalid option. Please try again.");
-                    break;
-            }
+            case "View currently doing tasks":
+                TaskView.DisplayCurrentlyDoing();
+                break;
+            case "View kanban":
+                // TaskView.DisplayKanBan();
+                break;
+            case "View specific boards":
+                TaskView.SelectBoard();
+                break;
+            case "View all tasks in system":
+                TaskView.DisplayAll();
+                break;
+            case "exit program":
+                return true;
         }
+
+        return false;
     }
 
-    public static void PrintMenu()
+    public static Panel Logo()
     {
-        Console.WriteLine("Menu:");
-        Console.WriteLine("1. View Tasks");
-        Console.WriteLine("2. Add Task");
-        Console.WriteLine("3. Update Task");
-        Console.WriteLine("4. Delete Task");
-        Console.WriteLine("5. Toggle Task Completion");
-        Console.WriteLine("6. Exit");
+        string logo =
+            " __    __                      __                           \n" +
+            "/  |  /  |                    /  |                          \n" +
+            "$$ | /$$/   ______   _______  $$ |____    ______   _______  \n" +
+            "$$ |/$$/   /      \\ /       \\ $$      \\  /      \\ /       \\ \n" +
+            "$$  $$<    $$$$$$  |$$$$$$$  |$$$$$$$  | $$$$$$  |$$$$$$$  |\n" +
+            "$$$$$  \\   /    $$ |$$ |  $$ |$$ |  $$ | /    $$ |$$ |  $$ |\n" +
+            "$$ |$$  \\ /$$$$$$$ |$$ |  $$ |$$ |__$$ |/$$$$$$$ |$$ |  $$ |\n" +
+            "$$ | $$  |$$    $$ |$$ |  $$ |$$    $$/ $$    $$ |$$ |  $$ |\n" +
+            "$$/   $$/  $$$$$$$/ $$/   $$/ $$$$$$$/   $$$$$$$/ $$/   $$/ ";
+
+        Panel panel = new Panel(logo).Expand();
+        panel.Header($"HR.DATA STRUCTURES AND ALGORITHMS - Project One", Justify.Center);
+
+        return panel;
     }
 
-    public static string Prompt(string prompt)
+    public static void GoodByeMessage()
     {
-        Console.Write(prompt);
-        return Console.ReadLine();
+        //Create a new panel in which we will add our goodbye message
+        Panel panel = new Panel(new Text("Thank you for using the program\n\nNow exiting program...")).Expand();
+        panel.Header($"SYSTEM", Justify.Center);
+
+        //Print the new UI
+        AnsiConsole.Write(panel);
+    }
+
+    private static string TimeGreeting()
+    {
+        if (DateTime.UtcNow.Hour < 12) {
+            return "Morning";
+        } else if (DateTime.UtcNow.Hour < 17) {
+            return "Afternoon";
+        } else {
+            return "Evening";
+        }
     }
 }

@@ -90,7 +90,10 @@ public class MyHashmap<TKey, TValue>: IMyCollection<KeyValuePair<TKey, TValue>>
 
     public void Clear()
     {
-        throw new NotImplementedException();
+        for (int i = 0; i < _buckets.Length; i++)
+        {
+            _buckets[i] = null;
+        }
     }
 
     public R Reduce<R>(Func<R, KeyValuePair<TKey, TValue>, R> accumulator, R initial)

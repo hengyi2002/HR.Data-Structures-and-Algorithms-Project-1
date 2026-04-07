@@ -2,11 +2,274 @@ using Spectre.Console;
 
 public static class TaskView
 {
-    public static void PrintTasks(User currUser, TaskItem[] taskItems)
+    public static void DisplayAll()
     {
-        //Clear the console
-        AnsiConsole.Clear();
+        bool exit = false;
+        while (!exit) {
+            //Clear the console
+            AnsiConsole.Clear();
 
+            //TODO, Implement real data extraction from database
+            TaskItem[] DEMO_DATA = [
+                new TaskItem("Baking a cake", "Baking a very good cake at the Hogeschool Rotterdam kitchen", 0, null, null),
+                new TaskItem("Learning about IMyCollections", "What is a IMyCollection?", 1, null, null),
+                new TaskItem("Making UI", "Make the UI for our awesome application", 2, null, null),
+                new TaskItem("Learning Introductions", "Learning about how to write a introduction", 3, null, null)
+            ];
+
+            PrintTasks(DEMO_DATA, $"All tasks");
+
+            exit = TaskOptions(DEMO_DATA);
+        }
+    }
+
+    public static void DisplayCurrentlyDoing()
+    {
+        bool exit = false;
+        while (!exit)
+        {
+            //Clear the console
+            AnsiConsole.Clear();
+ 
+            //TODO, Implement real data extraction from database
+            TaskItem[] DEMO_DATA = [
+                new TaskItem("Baking a cake", "Baking a very good cake at the Hogeschool Rotterdam kitchen", 0, null, null),
+                new TaskItem("Learning about IMyCollections", "What is a IMyCollection?", 1, null, null),
+                new TaskItem("Making UI", "Make the UI for our awesome application", 2, null, null),
+                new TaskItem("Learning Introductions", "Learning about how to write a introduction", 3, null, null)
+            ];
+
+            PrintTasks(DEMO_DATA, $"Currently doing tasks");
+
+            SelectionPrompt<string> reqPrompt = new SelectionPrompt<string>();
+            reqPrompt.AddChoices("Exit");
+
+            if(AnsiConsole.Prompt(reqPrompt) == "Exit") exit = true;
+        }
+    }
+
+    public static void SelectBoard()
+    {
+        bool exit = false;
+        while (!exit) {
+            //Clear the console
+            AnsiConsole.Clear();
+
+            SelectionPrompt<string> reqPrompt = new SelectionPrompt<string>();
+            reqPrompt.Title("Which board would you like to view?");
+            reqPrompt.AddChoices("ToDo", "Doing", "Review", "Complete", "Exit");
+            switch (AnsiConsole.Prompt(reqPrompt))
+            {
+                case "ToDo":
+                    TaskItem[] DEMO_TODO_DATA = [
+                        new TaskItem("Baking a cake", "Baking a very good cake at the Hogeschool Rotterdam kitchen", 0, null, null),
+                        new TaskItem("Learning about IMyCollections", "What is a IMyCollection?", 1, null, null),
+                        new TaskItem("Making UI", "Make the UI for our awesome application", 2, null, null),
+                        new TaskItem("Learning Introductions", "Learning about how to write a introduction", 3, null, null)
+                    ];
+
+                    PrintTasks([], "ToDo tasks");
+                    exit = TaskOptions(DEMO_TODO_DATA);
+                    break;
+                case "Doing":
+                    TaskItem[] DEMO_DOING_DATA = [
+                        new TaskItem("Baking a cake", "Baking a very good cake at the Hogeschool Rotterdam kitchen", 0, null, null),
+                        new TaskItem("Learning about IMyCollections", "What is a IMyCollection?", 1, null, null),
+                        new TaskItem("Making UI", "Make the UI for our awesome application", 2, null, null),
+                        new TaskItem("Learning Introductions", "Learning about how to write a introduction", 3, null, null)
+                    ];
+
+                    PrintTasks([], "Doing tasks");
+                    exit = TaskOptions(DEMO_DOING_DATA);
+                    break;
+                case "Review":
+                    TaskItem[] DEMO_REVIEW_DATA = [
+                        new TaskItem("Baking a cake", "Baking a very good cake at the Hogeschool Rotterdam kitchen", 0, null, null),
+                        new TaskItem("Learning about IMyCollections", "What is a IMyCollection?", 1, null, null),
+                        new TaskItem("Making UI", "Make the UI for our awesome application", 2, null, null),
+                        new TaskItem("Learning Introductions", "Learning about how to write a introduction", 3, null, null)
+                    ];
+
+                    PrintTasks([], "Review tasks");
+                    exit = TaskOptions(DEMO_REVIEW_DATA);
+                    break;
+                case "Complete":
+                    TaskItem[] DEMO_COMPLETE_DATA = [
+                        new TaskItem("Baking a cake", "Baking a very good cake at the Hogeschool Rotterdam kitchen", 0, null, null),
+                        new TaskItem("Learning about IMyCollections", "What is a IMyCollection?", 1, null, null),
+                        new TaskItem("Making UI", "Make the UI for our awesome application", 2, null, null),
+                        new TaskItem("Learning Introductions", "Learning about how to write a introduction", 3, null, null)
+                    ];
+
+                    PrintTasks([], "Complete tasks");
+                    exit = TaskOptions(DEMO_COMPLETE_DATA);
+                    break;
+                default: case "Exit":
+                    exit = true;
+                    break;
+            }
+        }
+    }
+
+    private static bool TaskOptions(TaskItem[] taskItems)
+    {
+        SelectionPrompt<string> reqPrompt = new SelectionPrompt<string>().Title("What would you like to do?");
+        reqPrompt.AddChoice("Create ticket");
+        if (taskItems.Count() > 0) reqPrompt.AddChoice("Update ticket");
+        if (taskItems.Count() > 0) reqPrompt.AddChoice("Delete ticket");
+        reqPrompt.AddChoice("Exit");
+
+        switch (AnsiConsole.Prompt(reqPrompt))
+        {
+            case "Create ticket":
+                CreateTicket();
+                return false;
+            case "Update ticket":
+                TaskItem? selectedTicket = selectPrompt(taskItems);
+                if (selectedTicket != null)
+                {
+                    UpdateTicket(selectedTicket);
+                }
+                return false;
+            case "Delete ticket":
+                TaskItem? ticketToDelete = selectPrompt(taskItems);
+                if (ticketToDelete != null)
+                {
+                    DeleteTicket(ticketToDelete);
+                }
+                return false;
+            case "Exit":
+                //Exit loop
+                return true;
+        }
+
+        return false;
+    }
+
+    private static void CreateTicket()
+    {
+        TaskItem newTicket = createPrompt();
+        PrintTasks([newTicket]);
+        
+        if(AreYouSurePrompt("Create"))
+        {
+            //TODO, Implement create to database
+        }
+    }
+
+    private static void UpdateTicket(TaskItem TicketToUpdate)
+    {
+        TaskItem updatedTicket = updatePrompt(TicketToUpdate);
+        PrintTasks([updatedTicket]);
+
+        if(AreYouSurePrompt("Update"))
+        {
+            
+        }
+    }
+
+    private static TaskItem updatePrompt(TaskItem toUpdateTI)
+    {
+        Console.Clear();
+
+        return new TaskItem
+        (
+            AnsiConsole.Ask<string>($"Title ({toUpdateTI.Title}): "),
+            AnsiConsole.Ask<string>($"Description ({toUpdateTI.Description}): "),
+            GetTaskPriority(toUpdateTI.Priority).ToInt(),
+            null,
+            null
+        );
+    }
+
+    private static TaskItem createPrompt()
+    {
+        Console.Clear();
+
+        return new TaskItem
+        (
+            AnsiConsole.Ask<string>("Title: "),
+            AnsiConsole.Ask<string>("Description: "),
+            GetTaskPriority().ToInt(),
+            null,
+            null
+        );
+    }
+
+    private static void DeleteTicket(TaskItem toDeleteTI)
+    {
+        Console.Clear();
+        PrintTasks([toDeleteTI]);
+
+        if (AreYouSurePrompt("Delete"))
+        {
+            //TODO, Implement delete from database
+        }
+    }
+
+    private static TaskItem? selectPrompt(TaskItem[] taskItems)
+    {
+        string[] options = [];
+        foreach (TaskItem task in taskItems)        {
+            options = options.Append(task.Title).ToArray();
+        }
+        options = options.Append("Exit").ToArray();
+
+        string? selectedTicket = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+            .Title("Select a [green]Ticket[/]")
+            .PageSize(10)
+            .EnableSearch()
+            .SearchPlaceholderText("Type to search ticket titles...")
+            .AddChoices(options));
+
+        if (selectedTicket == "Exit") return null;
+
+        return taskItems.FirstOrDefault(t => t.Title == selectedTicket);
+    }
+
+    private static bool AreYouSurePrompt(string action)
+    {
+        SelectionPrompt<string> reqPrompt = new SelectionPrompt<string>();
+        reqPrompt.Title($"Are you sure you want to {action} this ticket?");
+        reqPrompt.AddChoices(action, "Cancel");
+
+        if(AnsiConsole.Prompt(reqPrompt) == action) return true;
+        return false;
+    }
+
+    private static TaskPriority GetTaskPriority(TaskPriority? taskPriority = null)
+    {
+        TaskPriority? returnValue = null;
+
+        SelectionPrompt<string> prompt = new SelectionPrompt<string>()
+            .AddChoices("Low", "Medium", "High");
+
+        prompt.Title(taskPriority is null ? "Priority: " : $"Priority ({taskPriority}): ");
+
+        switch(AnsiConsole.Prompt(prompt))
+        {
+            case "Low":
+                returnValue = new TaskPriority(0);
+                break;
+            case "Medium":
+                returnValue = new TaskPriority(1);
+                break;
+            case "High":
+                returnValue = new TaskPriority(2);
+                break;
+        }
+        if (returnValue is not null)
+        {
+            AnsiConsole.WriteLine(taskPriority is null ? $"Priority: {returnValue}" : $"Priority ({taskPriority.ToString}): {returnValue}");
+            return returnValue;
+        }
+
+        return new TaskPriority(0);
+    }
+
+    private static void PrintTasks(TaskItem[] taskItems, string? headerText = null)
+    {
         //Create a new table
         Table table = new Table().Expand();
 
@@ -35,23 +298,104 @@ public static class TaskView
 
         //Create a new panel in which we will add our table
         Panel panel = new Panel(table);
-
-        //Set the Header
-        if (currUser is not null)
+        if (headerText is not null)
         {
-            panel.Header($"{currUser.FirstName} {currUser.LastName} - Current tasks", Justify.Center);
-        }
-        else
-        {
-            panel.Header("all tasks", Justify.Center);
+            panel.Header(headerText, Justify.Center);
         }
         
-
         //Print the new UI
         AnsiConsole.Write(panel);
     }
 
-    public static void PrintTasksKanBan(User? currUser, TaskItem[] taskItems)
+    private static void PrintTasksDateSplit(User? currUser, TaskItem[] taskItems)
+    {
+        //Clear the console
+        AnsiConsole.Clear();
+
+        TaskItem[][] TaskItems = [[], [] ,[]];
+        Table?[] TablesToView = [null, null, null];
+        Panel?[] PanelsToView = [null, null, null];
+        string[] Headers = ["Title", "Description", "Priority", "Status", "Created", "Updated"];
+
+        if (TaskItems[0].Count() > 0) TablesToView[0] = _mBasicTablePrefab(Headers);
+        if (TaskItems[1].Count() > 0) TablesToView[1] = _mBasicTablePrefab(Headers);
+        if (TaskItems[2].Count() > 0) TablesToView[2] = _mBasicTablePrefab(Headers);
+
+        int currPos = 0;
+
+        foreach (TaskItem[] tasks in TaskItems)
+        {
+            if (tasks.Count() > 0 && TablesToView[currPos] is not null)
+            {
+                //Put the tickets into the correct table
+                foreach (TaskItem task in taskItems)
+                {
+                    //Create a new row, and add in the correct values to the right spot
+                    TablesToView[currPos].AddRow(
+                        new Text($"{task.Title}"),
+                        new Text($"{task.Description}"),
+                        new Text($"{task.Priority_String}", task.Priority_Color),
+                        new Text($"{task.Status_String}", task.Status_Color),
+                        new Text($"{Utilities.DTToDisplaySTR(task.CreateDateTime)}"),
+                        new Text($"{Utilities.DTToDisplaySTR(task.UpdateDateTime)}")
+                    );    
+                }
+
+                //Create a new panel in which we will add our table
+                PanelsToView[currPos] = new Panel(TablesToView[currPos]);
+
+                string tableState = currPos switch
+                {
+                    0 => "Previouse",
+                    1 => "Current (today + 7 days ahead)",
+                    2 => "Upcoming (+7 days ahead)"
+                };
+
+                PanelsToView[currPos].Header(
+                    currUser is null ? $"[{tableState}] - all tasks" : $"[{tableState}] - {currUser.FullName}"
+                    ,Justify.Center
+                );
+            }
+
+            currPos++;
+        }
+
+        bool exit = false;
+        while (!exit) {
+            
+            SelectionPrompt<string> reqPrompt = new SelectionPrompt<string>().Title("Which tickets do you wish to see");
+
+            if (PanelsToView[0] is not null) reqPrompt.AddChoice("Previouse");
+            if (PanelsToView[1] is not null) reqPrompt.AddChoice("Current");
+            if (PanelsToView[2] is not null) reqPrompt.AddChoice("Upcoming");
+            reqPrompt.AddChoice("Exit");
+
+            string selectedOption = AnsiConsole.Prompt(reqPrompt);
+
+            switch (selectedOption)
+            {
+                case "Previous":
+                    //Print the new UI
+                    AnsiConsole.Write(PanelsToView[0]);
+                    break;
+                case "Current":
+                    //Print the new UI
+                    AnsiConsole.Write(PanelsToView[1]);
+                    break;
+                case "Upcoming":
+                    //Print the new UI
+                    AnsiConsole.Write(PanelsToView[2]);
+                    break;
+                case "Exit":
+                    //Exit loop
+                    exit = true;
+                    break;
+            }
+            if (exit == false) AnsiConsole.Ask<string>("Press enter to continue");
+        }   
+    }
+
+    private static void PrintTasksKanBan(User? currUser, TaskItem[] taskItems)
     {
         //Clear the console
         AnsiConsole.Clear();
@@ -85,5 +429,18 @@ public static class TaskView
 
         //Print the new UI
         AnsiConsole.Write(panel);
+    }
+
+    private static Table _mBasicTablePrefab(string[] headers)
+    {
+        //Create a new table
+        Table table = new Table().Expand();
+
+        foreach (string header in headers)
+        {
+            table.AddColumn(new TableColumn($"TH_{header}").Header(header));
+        }
+
+        return table;
     }
 }

@@ -69,4 +69,5 @@ public class TaskPriority
 
     //Override the ToString()
     public override string ToString() => eTaskPriority.ToString();
+    public int ToInt() => (int) eTaskPriority;
 }
