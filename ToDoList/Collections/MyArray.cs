@@ -1,6 +1,6 @@
 using System;
 
-public class MyArray<T> : IMyCollection<T>
+public class MyArray<T> : IMyCollection<T> where T : iDatabase
 {
     private T[] _items;
     private int _count;
@@ -71,6 +71,16 @@ public class MyArray<T> : IMyCollection<T>
         }
         _count--;
         _items[_count] = default(T); 
+    }
+
+    public void Update(T task)
+    {
+        T found = FindBy(task.ID, (t, id) => t.ID == id);
+        if (found != null)
+        {
+            int index = IndexOf(found);
+            _items[index] = task;
+        }
     }
 
     public T FindBy<K>(K key, Func<T, K, bool> predicate)

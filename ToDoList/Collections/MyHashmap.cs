@@ -46,6 +46,25 @@ public class MyHashmap<TKey, TValue>: IMyCollection<KeyValuePair<TKey, TValue>>
          _buckets[index].Remove(item);
     }
 
+    public void Update(KeyValuePair<TKey, TValue> item)
+    {
+        int index = GetIndex(item.Key);
+        if (_buckets[index] == null)
+        {
+            throw new KeyNotFoundException($"Key '{item.Key}' not found in the hashmap.");
+        }
+        var current = _buckets[index].FindBy(item.Key, (kvp, key) => kvp.Key.Equals(key));
+        if (current.Key.Equals(item.Key))
+        {
+            _buckets[index].Remove(current);
+            _buckets[index].Add(item);
+        }
+        else
+        {
+            throw new KeyNotFoundException($"Key '{item.Key}' not found in the hashmap.");
+        }
+    }
+
     public KeyValuePair<TKey, TValue> FindBy<K>(K key, Func<KeyValuePair<TKey, TValue>, K, bool> predicate)
     {
         int index = GetIndex((TKey)(object)key);
@@ -110,4 +129,5 @@ public class MyHashmap<TKey, TValue>: IMyCollection<KeyValuePair<TKey, TValue>>
     {
         throw new NotImplementedException();
     }
+
 }
