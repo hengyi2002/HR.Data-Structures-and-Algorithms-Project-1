@@ -242,4 +242,9 @@ public class MyLinkedList<T> : IMyCollection<T>
         }
         return count;
     }
+
+    public void Update(T task)
+    {
+        // idk wat je hier wil
+    }
 }
