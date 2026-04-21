@@ -25,6 +25,10 @@ public class MyHashmap<TKey, TValue>: IMyCollection<KeyValuePair<TKey, TValue>>
         int index = GetIndex(item.Key);
 
         _buckets[index] ??= new MyLinkedList<KeyValuePair<TKey, TValue>>();
+
+        if(Check()){
+            Rehash();
+        }
         
         foreach (var kvp in _buckets[index])
         {
@@ -34,6 +38,45 @@ public class MyHashmap<TKey, TValue>: IMyCollection<KeyValuePair<TKey, TValue>>
             }
         }
         _buckets[index].Add(item);
+    }
+    public bool Check()
+    {
+        int IsUsed = 0;
+        for(int i = 0; i <= _buckets.Length; i++)
+        {
+            if(_buckets[i].Count != 0)
+            {
+                IsUsed++;
+            }
+        }
+        int bucketlength = _buckets.Length;
+        if(IsUsed <= bucketlength/2) 
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public void Rehash()
+    {
+        MyLinkedList<KeyValuePair<TKey, TValue>>[] oldBuckets = _buckets;
+        int newCapacity = Count * 2;
+        MyLinkedList<KeyValuePair<TKey, TValue>>[] newBuckets = new MyLinkedList<KeyValuePair<TKey, TValue>>[newCapacity];
+
+        foreach (var bucket in oldBuckets)
+        {
+            if (bucket != null)
+            {
+                foreach (var kvp in bucket)
+                {
+                    int newIndex = GetIndex(kvp.Key);
+                    newBuckets[newIndex] ??= new MyLinkedList<KeyValuePair<TKey, TValue>>();
+                    newBuckets[newIndex].Add(kvp);  
+                }
+            }
+        }
+
+        Array.Copy(newBuckets, _buckets, newCapacity);
     }
 
     public void Remove(KeyValuePair<TKey, TValue> item)
