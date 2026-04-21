@@ -8,18 +8,9 @@ public static class TaskView
         while (!exit) {
             //Clear the console
             AnsiConsole.Clear();
+            PrintTasks([], "All tasks");
 
-            //TODO, Implement real data extraction from database
-            TaskItem[] DEMO_DATA = [
-                new TaskItem("Baking a cake", "Baking a very good cake at the Hogeschool Rotterdam kitchen", 0, null, null),
-                new TaskItem("Learning about IMyCollections", "What is a IMyCollection?", 1, null, null),
-                new TaskItem("Making UI", "Make the UI for our awesome application", 2, null, null),
-                new TaskItem("Learning Introductions", "Learning about how to write a introduction", 3, null, null)
-            ];
-
-            PrintTasks(DEMO_DATA, $"All tasks");
-
-            exit = TaskOptions(DEMO_DATA);
+            exit = TaskOptions([], true);
         }
     }
 
@@ -30,16 +21,7 @@ public static class TaskView
         {
             //Clear the console
             AnsiConsole.Clear();
- 
-            //TODO, Implement real data extraction from database
-            TaskItem[] DEMO_DATA = [
-                new TaskItem("Baking a cake", "Baking a very good cake at the Hogeschool Rotterdam kitchen", 0, null, null),
-                new TaskItem("Learning about IMyCollections", "What is a IMyCollection?", 1, null, null),
-                new TaskItem("Making UI", "Make the UI for our awesome application", 2, null, null),
-                new TaskItem("Learning Introductions", "Learning about how to write a introduction", 3, null, null)
-            ];
-
-            PrintTasks(DEMO_DATA, $"Currently doing tasks");
+            PrintTasks([], "Currently doing tasks");
 
             SelectionPrompt<string> reqPrompt = new SelectionPrompt<string>();
             reqPrompt.AddChoices("Exit");
@@ -54,6 +36,7 @@ public static class TaskView
         while (!exit) {
             //Clear the console
             AnsiConsole.Clear();
+            TaskItem[] taskItems = Program.TaskItemRepo.Read();
 
             SelectionPrompt<string> reqPrompt = new SelectionPrompt<string>();
             reqPrompt.Title("Which board would you like to view?");
@@ -61,48 +44,24 @@ public static class TaskView
             switch (AnsiConsole.Prompt(reqPrompt))
             {
                 case "ToDo":
-                    TaskItem[] DEMO_TODO_DATA = [
-                        new TaskItem("Baking a cake", "Baking a very good cake at the Hogeschool Rotterdam kitchen", 0, null, null),
-                        new TaskItem("Learning about IMyCollections", "What is a IMyCollection?", 1, null, null),
-                        new TaskItem("Making UI", "Make the UI for our awesome application", 2, null, null),
-                        new TaskItem("Learning Introductions", "Learning about how to write a introduction", 3, null, null)
-                    ];
-
+                    // [] Has to be replaced with a filtered IMyCollection of taskitems with the correct status
                     PrintTasks([], "ToDo tasks");
-                    exit = TaskOptions(DEMO_TODO_DATA);
+                    exit = TaskOptions([], true);
                     break;
                 case "Doing":
-                    TaskItem[] DEMO_DOING_DATA = [
-                        new TaskItem("Baking a cake", "Baking a very good cake at the Hogeschool Rotterdam kitchen", 0, null, null),
-                        new TaskItem("Learning about IMyCollections", "What is a IMyCollection?", 1, null, null),
-                        new TaskItem("Making UI", "Make the UI for our awesome application", 2, null, null),
-                        new TaskItem("Learning Introductions", "Learning about how to write a introduction", 3, null, null)
-                    ];
-
+                    // [] Has to be replaced with a filtered IMyCollection of taskitems with the correct status
                     PrintTasks([], "Doing tasks");
-                    exit = TaskOptions(DEMO_DOING_DATA);
+                    exit = TaskOptions([], true);
                     break;
                 case "Review":
-                    TaskItem[] DEMO_REVIEW_DATA = [
-                        new TaskItem("Baking a cake", "Baking a very good cake at the Hogeschool Rotterdam kitchen", 0, null, null),
-                        new TaskItem("Learning about IMyCollections", "What is a IMyCollection?", 1, null, null),
-                        new TaskItem("Making UI", "Make the UI for our awesome application", 2, null, null),
-                        new TaskItem("Learning Introductions", "Learning about how to write a introduction", 3, null, null)
-                    ];
-
+                    // [] Has to be replaced with a filtered IMyCollection of taskitems with the correct status
                     PrintTasks([], "Review tasks");
-                    exit = TaskOptions(DEMO_REVIEW_DATA);
+                    exit = TaskOptions([], true);
                     break;
                 case "Complete":
-                    TaskItem[] DEMO_COMPLETE_DATA = [
-                        new TaskItem("Baking a cake", "Baking a very good cake at the Hogeschool Rotterdam kitchen", 0, null, null),
-                        new TaskItem("Learning about IMyCollections", "What is a IMyCollection?", 1, null, null),
-                        new TaskItem("Making UI", "Make the UI for our awesome application", 2, null, null),
-                        new TaskItem("Learning Introductions", "Learning about how to write a introduction", 3, null, null)
-                    ];
-
+                    // [] Has to be replaced with a filtered IMyCollection of taskitems with the correct status
                     PrintTasks([], "Complete tasks");
-                    exit = TaskOptions(DEMO_COMPLETE_DATA);
+                    exit = TaskOptions([], true);
                     break;
                 default: case "Exit":
                     exit = true;
@@ -111,12 +70,15 @@ public static class TaskView
         }
     }
 
-    private static bool TaskOptions(TaskItem[] taskItems)
+    private static bool TaskOptions(IMyCollection<TaskItem> taskItems, bool statusChangeOption = false)
     {
+        bool isAdmin = Program.appUser is not null && Program.appUser.Role.Name == "Admin";
+
         SelectionPrompt<string> reqPrompt = new SelectionPrompt<string>().Title("What would you like to do?");
-        reqPrompt.AddChoice("Create ticket");
-        if (taskItems.Count() > 0) reqPrompt.AddChoice("Update ticket");
-        if (taskItems.Count() > 0) reqPrompt.AddChoice("Delete ticket");
+        if (isAdmin)reqPrompt.AddChoice("Create ticket");
+        if (taskItems.Count > 0 || isAdmin) reqPrompt.AddChoice("Update ticket");
+        if (taskItems.Count > 0 || isAdmin) reqPrompt.AddChoice("Delete ticket");
+        if (taskItems.Count > 0 || statusChangeOption) reqPrompt.AddChoice("Change ticket status");
         reqPrompt.AddChoice("Exit");
 
         switch (AnsiConsole.Prompt(reqPrompt))
@@ -138,6 +100,13 @@ public static class TaskView
                     DeleteTicket(ticketToDelete);
                 }
                 return false;
+            case "Change ticket status":
+                TaskItem? selectedChangeTicket = selectPrompt(taskItems);
+                if (selectedChangeTicket != null)
+                {
+                    UpdateStatusTicket(selectedChangeTicket);
+                }
+                return false;
             case "Exit":
                 //Exit loop
                 return true;
@@ -149,7 +118,7 @@ public static class TaskView
     private static void CreateTicket()
     {
         TaskItem newTicket = createPrompt();
-        PrintTasks([newTicket]);
+        PrintTasks(newTicket);
         
         if(AreYouSurePrompt("Create"))
         {
@@ -160,9 +129,20 @@ public static class TaskView
     private static void UpdateTicket(TaskItem TicketToUpdate)
     {
         TaskItem updatedTicket = updatePrompt(TicketToUpdate);
-        PrintTasks([updatedTicket]);
+        PrintTasks(updatedTicket);
 
         if(AreYouSurePrompt("Update"))
+        {
+            
+        }
+    }
+
+    private static void UpdateStatusTicket(TaskItem TicketToUpdate)
+    {
+        TaskItem updatedTicket = updateStatusPrompt(TicketToUpdate);
+        PrintTasks(updatedTicket);
+
+        if(AreYouSurePrompt("Update status"))
         {
             
         }
@@ -172,14 +152,39 @@ public static class TaskView
     {
         Console.Clear();
 
-        return new TaskItem
-        (
-            AnsiConsole.Ask<string>($"Title ({toUpdateTI.Title}): "),
-            AnsiConsole.Ask<string>($"Description ({toUpdateTI.Description}): "),
-            GetTaskPriority(toUpdateTI.Priority).ToInt(),
-            null,
-            null
-        );
+        toUpdateTI.Title = AnsiConsole.Ask<string>($"Title ({toUpdateTI.Title}): ", toUpdateTI.Title);
+        toUpdateTI.Description = AnsiConsole.Ask<string>($"Description ({toUpdateTI.Description}): ", toUpdateTI.Description);
+        toUpdateTI.Priority = GetTaskPriority(toUpdateTI.Priority);
+        
+        return toUpdateTI;
+    }
+
+    private static TaskItem updateStatusPrompt(TaskItem toUpdateTI)
+    {
+        Console.Clear();
+
+        string updateValue = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+            .Title($"Status ({toUpdateTI.Status}): ")
+            .AddChoices("ToDo", "Doing", "Review", "Complete"));
+        
+        switch (updateValue)
+        {
+            case "ToDo":
+                toUpdateTI.Status = new TaskStatus("ToDo");
+                break;
+            case "Doing":
+                toUpdateTI.Status = new TaskStatus("Doing");
+                break;
+            case "Review":
+                toUpdateTI.Status = new TaskStatus("Review");
+                break;
+            case "Complete":
+                toUpdateTI.Status = new TaskStatus("Complete");
+                break;
+        }
+
+        return toUpdateTI;
     }
 
     private static TaskItem createPrompt()
@@ -188,18 +193,22 @@ public static class TaskView
 
         return new TaskItem
         (
+            0,
             AnsiConsole.Ask<string>("Title: "),
             AnsiConsole.Ask<string>("Description: "),
             GetTaskPriority().ToInt(),
-            null,
-            null
+            0,
+            0,
+            Program.appUser is not null ? Program.appUser.ID : null,
+            DateTime.Now,
+            DateTime.Now
         );
     }
 
     private static void DeleteTicket(TaskItem toDeleteTI)
     {
         Console.Clear();
-        PrintTasks([toDeleteTI]);
+        PrintTasks(toDeleteTI);
 
         if (AreYouSurePrompt("Delete"))
         {
@@ -207,7 +216,7 @@ public static class TaskView
         }
     }
 
-    private static TaskItem? selectPrompt(TaskItem[] taskItems)
+    private static TaskItem? selectPrompt(IMyCollection<TaskItem> taskItems)
     {
         string[] options = [];
         foreach (TaskItem task in taskItems)        {
@@ -224,8 +233,8 @@ public static class TaskView
             .AddChoices(options));
 
         if (selectedTicket == "Exit") return null;
-
-        return taskItems.FirstOrDefault(t => t.Title == selectedTicket);
+        
+        return Utilities.ToArray(taskItems.Filter(t => t.Title == selectedTicket))[0];
     }
 
     private static bool AreYouSurePrompt(string action)
@@ -268,7 +277,7 @@ public static class TaskView
         return new TaskPriority(0);
     }
 
-    private static void PrintTasks(TaskItem[] taskItems, string? headerText = null)
+    private static void PrintTasks(IMyCollection<TaskItem> taskItems, string? headerText = null)
     {
         //Create a new table
         Table table = new Table().Expand();
@@ -307,15 +316,48 @@ public static class TaskView
         AnsiConsole.Write(panel);
     }
 
-    private static void PrintTasksDateSplit(User? currUser, MyArray<TaskItem> taskItems)
+    private static void PrintTasks(TaskItem taskItems, string? headerText = null)
+    {
+        //Create a new table
+        Table table = new Table().Expand();
+
+        //Add columns to the table
+        table.AddColumn(new TableColumn("TH_Title").Header("Title"));
+        table.AddColumn(new TableColumn("TH_Description").Header("Description"));
+        table.AddColumn(new TableColumn("TH_Priority").Header("Priority"));
+        table.AddColumn(new TableColumn("TH_Status").Header("Status"));
+        table.AddColumn(new TableColumn("TH_Created").Header("Created"));
+        table.AddColumn(new TableColumn("TH_Updated").Header("Updated"));
+
+        table.AddRow(
+            new Text($"{taskItems.Title}"),
+            new Text($"{taskItems.Description}"),
+            new Text($"{taskItems.Priority_String}", taskItems.Priority_Color),
+            new Text($"{taskItems.Status_String}", taskItems.Status_Color),
+            new Text($"{Utilities.DTToDisplaySTR(taskItems.CreateDateTime)}"),
+            new Text($"{Utilities.DTToDisplaySTR(taskItems.UpdateDateTime)}")
+        );
+
+        //Create a new panel in which we will add our table
+        Panel panel = new Panel(table);
+        if (headerText is not null)
+        {
+            panel.Header(headerText, Justify.Center);
+        }
+        
+        //Print the new UI
+        AnsiConsole.Write(panel);
+    }
+
+    private static void PrintTasksDateSplit(User? currUser, IMyCollection<TaskItem> taskItems)
     {
         //Clear the console
         AnsiConsole.Clear();
 
-        MyArray<TaskItem>[] TaskItems = [
-            (MyArray<TaskItem>)taskItems.Filter(t => t.Status.eTaskStatus == eTaskStatus.Complete), 
-            (MyArray<TaskItem>)taskItems.Filter(t => t.Status.eTaskStatus == eTaskStatus.Doing),
-            (MyArray<TaskItem>)taskItems.Filter(t => t.Status.eTaskStatus == eTaskStatus.ToDo)
+        IMyCollection<TaskItem>[] TaskItems = [
+            taskItems.Filter(t => t.Status.eTaskStatus == eTaskStatus.Complete), 
+            taskItems.Filter(t => t.Status.eTaskStatus == eTaskStatus.Doing),
+            taskItems.Filter(t => t.Status.eTaskStatus == eTaskStatus.ToDo)
         ];
         Table?[] TablesToView = [null, null, null];
         Panel?[] PanelsToView = [null, null, null];
@@ -327,7 +369,7 @@ public static class TaskView
 
         int currPos = 0;
 
-        foreach (MyArray<TaskItem> tasks in TaskItems)
+        foreach (IMyCollection<TaskItem> tasks in TaskItems)
         {
             if (tasks.Count > 0 && TablesToView[currPos] is not null)
             {
@@ -399,7 +441,7 @@ public static class TaskView
         }   
     }
 
-    public static void PrintTasksKanBan(User? currUser, MyArray<TaskItem> taskItems)
+    public static void PrintTasksKanBan(User? currUser, IMyCollection<TaskItem> taskItems)
     {
         //Clear the console
         AnsiConsole.Clear();
@@ -413,20 +455,20 @@ public static class TaskView
         table.AddColumn(new TableColumn("TH_Review").Header(new Text("Review", TaskStatus.ReviewColor)));
         table.AddColumn(new TableColumn("TH_Complete").Header(new Text("Complete", TaskStatus.CompleteColor)));
 
-        MyArray<TaskItem> BacklogItems = (MyArray<TaskItem>)taskItems.Filter(t => t.Status == new TaskStatus("ToDo"));
-        MyArray<TaskItem> DoingItems = (MyArray<TaskItem>)taskItems.Filter(t => t.Status == new TaskStatus("Doing"));
-        MyArray<TaskItem> ReviewItems = (MyArray<TaskItem>)taskItems.Filter(t => t.Status == new TaskStatus("Review"));
-        MyArray<TaskItem> CompleteItems = (MyArray<TaskItem>)taskItems.Filter(t => t.Status == new TaskStatus("Complete"));
+        TaskItem[] BacklogItems = Utilities.ToArray(taskItems.Filter(t => t.Status == new TaskStatus("ToDo")));
+        TaskItem[] DoingItems = Utilities.ToArray(taskItems.Filter(t => t.Status == new TaskStatus("Doing")));
+        TaskItem[] ReviewItems = Utilities.ToArray(taskItems.Filter(t => t.Status == new TaskStatus("Review")));
+        TaskItem[] CompleteItems = Utilities.ToArray(taskItems.Filter(t => t.Status == new TaskStatus("Complete")));
 
-        int maxItems = new int[] { BacklogItems.Count, DoingItems.Count, ReviewItems.Count, CompleteItems.Count }.Max();
+        int maxItems = new int[] { BacklogItems.Length, DoingItems.Length, ReviewItems.Length, CompleteItems.Length }.Max();
 
         for (int i = 0; i < maxItems; i++)
         {
             table.AddRow(
-                i < BacklogItems.Count ? new Text($"{BacklogItems[i].Title}\n{BacklogItems[i].Description}", BacklogItems[i].Priority_Color) : new Text(""),
-                i < DoingItems.Count ? new Text($"{DoingItems[i].Title}\n{DoingItems[i].Description}", DoingItems[i].Priority_Color) : new Text(""),
-                i < ReviewItems.Count ? new Text($"{ReviewItems[i].Title}\n{ReviewItems[i].Description}", ReviewItems[i].Priority_Color) : new Text(""),
-                i < CompleteItems.Count ? new Text($"{CompleteItems[i].Title}\n{CompleteItems[i].Description}", CompleteItems[i].Priority_Color) : new Text("")
+                i < BacklogItems.Length ? new Text($"{BacklogItems[i].Title}\n{BacklogItems[i].Description}", BacklogItems[i].Priority_Color) : new Text(""),
+                i < DoingItems.Length ? new Text($"{DoingItems[i].Title}\n{DoingItems[i].Description}", DoingItems[i].Priority_Color) : new Text(""),
+                i < ReviewItems.Length ? new Text($"{ReviewItems[i].Title}\n{ReviewItems[i].Description}", ReviewItems[i].Priority_Color) : new Text(""),
+                i < CompleteItems.Length ? new Text($"{CompleteItems[i].Title}\n{CompleteItems[i].Description}", CompleteItems[i].Priority_Color) : new Text("")
             );
         }
 

@@ -6,13 +6,18 @@ public class MenuView()
     public static bool Main()
     {
         AnsiConsole.Clear();
-
         AnsiConsole.Write(Align.Center(Logo()));
 
-        switch(AnsiConsole.Prompt(
-            new SelectionPrompt<string>()
-                .Title($"Good {TimeGreeting()}, What would you like to do today?")
-                .AddChoices("View currently doing tasks", "View kanban", "View specific boards", "View all tasks in system", "exit program")))
+        SelectionPrompt<string> Prompt = new SelectionPrompt<string>()
+            .Title($"Good {TimeGreeting()}, What would you like to do today?")
+            .AddChoices("View currently doing tasks", "View kanban", "View specific boards", "View all tasks in system", "exit program");
+
+        if (Program.appUser is not null && Program.appUser.Role.Name == "Admin")
+        {
+            Prompt.AddChoice("Admin options");
+        }
+
+        switch(AnsiConsole.Prompt(Prompt))
         {
             case "View currently doing tasks":
                 TaskView.DisplayCurrentlyDoing();
@@ -25,6 +30,9 @@ public class MenuView()
                 break;
             case "View all tasks in system":
                 TaskView.DisplayAll();
+                break;
+            case "Admin options":
+                AdminMenu();
                 break;
             case "exit program":
                 return true;
@@ -52,6 +60,28 @@ public class MenuView()
         return panel;
     }
 
+    public static int SelectImplementation()
+    {
+        AnsiConsole.Clear();
+        AnsiConsole.Write(Align.Center(Logo()));
+
+        SelectionPrompt<string> Prompt = new SelectionPrompt<string>()
+            .Title($"Which implementation would you like to use?)")
+            .AddChoices("Hashmap", "Linked List", "Double Linked List");
+
+        switch(AnsiConsole.Prompt(Prompt))
+        {
+            case "Hashmap":
+                return 0;
+            case "Linked List":
+                return 1;
+            case "Double Linked List":
+                return 2;
+            default:
+                return 0;
+        }
+    }
+
     public static User? Login(int attempts = 0)
     {
         AnsiConsole.Clear();
@@ -67,7 +97,7 @@ public class MenuView()
         // if (UserController.Login(username, password))
         if (username == "admin" && password == "password")
         {
-            return new User { FirstName = username };
+            return new User { FirstName = username, Role = new Role { Name = "Admin" } };
         } else {
             if (attempts < 2)
             {
@@ -99,6 +129,25 @@ public class MenuView()
             return "Afternoon";
         } else {
             return "Evening";
+        }
+    }
+
+    private static void AdminMenu()
+    {
+        SelectionPrompt<string> Prompt = new SelectionPrompt<string>()
+                .Title($"Admin options - What would you like to do?")
+                .AddChoices("View users", "View teams", "Exit");
+
+        switch(AnsiConsole.Prompt(Prompt))
+        {
+            case "View users":
+                UserView.Display();
+                break;
+            case "View teams":
+                TeamView.Display();
+                break;
+            case "Exit":
+                break;
         }
     }
 }

@@ -115,4 +115,6 @@ public class TaskStatus {
 
     //Override the ToString()
     public override string ToString() => eTaskStatus.ToString();
+
+    public int ToInt() => (int) eTaskStatus;
 }

@@ -6,7 +6,9 @@ public class TaskItem : iDatabase
     public string Title {get; set;}
     public string Description {get; set;}
     public TaskPriority Priority {get; set;}
+    public int Priority_Int => Priority.ToInt();
     public TaskStatus Status {get; set;}
+    public int Status_Int => Status.ToInt();
     public String Priority_String => Priority.ToString();
     public String Status_String => Status.ToString(); 
     public Style Priority_Color {
@@ -23,11 +25,11 @@ public class TaskItem : iDatabase
     public DateTime UpdateDateTime {get; set;}
 
     //Constructors
-    public TaskItem(string title, string description, int priority, int? teamID, int? userID) 
-    : this(0, title, description, new TaskPriority(priority), new TaskStatus("ToDo"), teamID, userID, DateTime.Now, DateTime.Now)
-    {
+    // public TaskItem(string title, string description, int priority, int? teamID, int? userID) 
+    // : this(0, title, description, new TaskPriority(priority), new TaskStatus("ToDo"), teamID, userID, DateTime.Now, DateTime.Now)
+    // {
         
-    }
+    // }
 
     public TaskItem(int id, string title, string description, int priority, int status, int? teamID, int? userID, string createDateTime, string updateDateTime) 
     : this(id, title, description, new TaskPriority(priority), new TaskStatus(status), teamID, userID, Utilities.DTFromSTR(createDateTime), Utilities.DTFromSTR(updateDateTime))
