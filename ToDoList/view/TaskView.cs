@@ -8,9 +8,10 @@ public static class TaskView
         while (!exit) {
             //Clear the console
             AnsiConsole.Clear();
-            PrintTasks([], "All tasks");
+            IMyCollection<TaskItem> taskItems = Utilities.ConvertToMyCollection(Program.TaskItemRepo.Read(), eIMycollectionType.Array);
+            PrintTasks(taskItems, "All tasks");
 
-            exit = TaskOptions([], true);
+            exit = TaskOptions(taskItems, true);
         }
     }
 
@@ -21,7 +22,8 @@ public static class TaskView
         {
             //Clear the console
             AnsiConsole.Clear();
-            PrintTasks([], "Currently doing tasks");
+            IMyCollection<TaskItem> taskItems = Utilities.ConvertToMyCollection(Program.TaskItemRepo.Read(), eIMycollectionType.Array);
+            PrintTasks(taskItems.Filter(t => t.Status == new TaskStatus("Doing")), "Currently doing tasks");
 
             SelectionPrompt<string> reqPrompt = new SelectionPrompt<string>();
             reqPrompt.AddChoices("Exit");
@@ -36,7 +38,7 @@ public static class TaskView
         while (!exit) {
             //Clear the console
             AnsiConsole.Clear();
-            TaskItem[] taskItems = Program.TaskItemRepo.Read();
+            IMyCollection<TaskItem> taskItems = Utilities.ConvertToMyCollection(Program.TaskItemRepo.Read(), eIMycollectionType.Array);
 
             SelectionPrompt<string> reqPrompt = new SelectionPrompt<string>();
             reqPrompt.Title("Which board would you like to view?");
@@ -44,24 +46,24 @@ public static class TaskView
             switch (AnsiConsole.Prompt(reqPrompt))
             {
                 case "ToDo":
-                    // [] Has to be replaced with a filtered IMyCollection of taskitems with the correct status
-                    PrintTasks([], "ToDo tasks");
-                    exit = TaskOptions([], true);
+                    IMyCollection<TaskItem> ToDoItems = taskItems.Filter(t => t.Status == new TaskStatus("ToDo"));
+                    PrintTasks(ToDoItems, "ToDo tasks");
+                    exit = TaskOptions(ToDoItems, true);
                     break;
                 case "Doing":
-                    // [] Has to be replaced with a filtered IMyCollection of taskitems with the correct status
-                    PrintTasks([], "Doing tasks");
-                    exit = TaskOptions([], true);
+                    IMyCollection<TaskItem> DoingItems = taskItems.Filter(t => t.Status == new TaskStatus("Doing"));
+                    PrintTasks(DoingItems, "Doing tasks");
+                    exit = TaskOptions(DoingItems, true);
                     break;
                 case "Review":
-                    // [] Has to be replaced with a filtered IMyCollection of taskitems with the correct status
-                    PrintTasks([], "Review tasks");
-                    exit = TaskOptions([], true);
+                    IMyCollection<TaskItem> ReviewItems = taskItems.Filter(t => t.Status == new TaskStatus("Review"));
+                    PrintTasks(ReviewItems, "Review tasks");
+                    exit = TaskOptions(ReviewItems, true);
                     break;
                 case "Complete":
-                    // [] Has to be replaced with a filtered IMyCollection of taskitems with the correct status
-                    PrintTasks([], "Complete tasks");
-                    exit = TaskOptions([], true);
+                    IMyCollection<TaskItem> CompleteItems = taskItems.Filter(t => t.Status == new TaskStatus("Complete"));
+                    PrintTasks(CompleteItems, "Complete tasks");
+                    exit = TaskOptions(CompleteItems, true);
                     break;
                 default: case "Exit":
                     exit = true;
