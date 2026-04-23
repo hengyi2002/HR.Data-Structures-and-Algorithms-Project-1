@@ -70,7 +70,7 @@ public class MyArray<T> : IMyCollection<T> where T : iDatabase
             _items[i] = _items[i + 1];
         }
         _count--;
-        _items[_count] = default(T); 
+        _items[_count] = default!; 
     }
 
     public void Update(T task)
@@ -90,7 +90,7 @@ public class MyArray<T> : IMyCollection<T> where T : iDatabase
             if (predicate(_items[i]) == 0)
                 return _items[i];
         }
-        return default(T);
+        return default!;
     }
 
     public IMyCollection<T> Filter(Func<T, bool> predicate)
@@ -145,7 +145,7 @@ public class MyArray<T> : IMyCollection<T> where T : iDatabase
     {
         for (int i = 0; i < _count; i++)
         {
-            _items[i] = default;
+            _items[i] = default!;
         }
         _count = 0;
     }

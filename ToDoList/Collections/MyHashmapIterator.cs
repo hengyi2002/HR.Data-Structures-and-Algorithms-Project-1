@@ -1,14 +1,14 @@
-public class MyHashmapIterator<T> : IMyIterator<T>
+public class MyHashmapIterator<T> : IMyIterator<T> where T : iDatabase
 {
     private MyLinkedList<T>[] _buckets;
     private int _bucketIndex;
-    private IMyIterator<T> _currentBucketIterator;
+    private IMyIterator<T>? _currentBucketIterator;
 
     public MyHashmapIterator(MyLinkedList<T>[] buckets)
     {
         _buckets = buckets;
         _bucketIndex = -1;
-        _currentBucketIterator = null;
+        _currentBucketIterator = null!;
     }
 
     public bool HasNext()
@@ -30,12 +30,12 @@ public class MyHashmapIterator<T> : IMyIterator<T>
         if (!HasNext())
             throw new InvalidOperationException("No more elements in the collection.");
 
-        return _currentBucketIterator.Next();
+        return _currentBucketIterator!.Next();
     }
 
     public void Reset()
     {
         _bucketIndex = -1;
-        _currentBucketIterator = null;
+        _currentBucketIterator = null!;
     }
 }

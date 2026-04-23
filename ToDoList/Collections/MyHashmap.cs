@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.Dynamic;
 
-public class MyHashmap<T>: IMyCollection<T>
+public class MyHashmap<T>: IMyCollection<T> where T : iDatabase
 {
     private MyLinkedList<T>[] _buckets;
 
@@ -125,7 +125,7 @@ public class MyHashmap<T>: IMyCollection<T>
                 }
             }
         }
-        return default(T);
+        return default!;
     }
 
 
@@ -157,7 +157,7 @@ public class MyHashmap<T>: IMyCollection<T>
     {
         for (int i = 0; i < _buckets.Length; i++)
         {
-            _buckets[i] = null;
+            _buckets[i] = null!;
         }
     }
 
