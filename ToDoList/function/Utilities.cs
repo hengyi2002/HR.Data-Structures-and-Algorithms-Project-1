@@ -25,9 +25,9 @@ public static class Utilities
             case eIMycollectionType.Hashmap:
                 collection = new MyHashmap<T>();
                 break;
-            // case eIMycollectionType.BinarySearchTree:
-            //     collection = new MyLinkedList<T>();
-            //     break;
+            case eIMycollectionType.BinarySearchTree:
+                collection = new MyLinkedList<T>();
+                break;
             default:
                 throw new ArgumentException("Invalid collection type");
         }

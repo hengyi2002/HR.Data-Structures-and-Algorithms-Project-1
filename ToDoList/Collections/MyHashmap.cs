@@ -163,17 +163,38 @@ public class MyHashmap<T>: IMyCollection<T>
 
     public R Reduce<R>(Func<R, T, R> accumulator, R initial)
     {
-        throw new NotImplementedException();
+        R result = initial;
+        foreach (var bucket in _buckets)
+        {
+            if (bucket != null)
+            {
+                foreach (var kvp in bucket)
+                {
+                    result = accumulator(result, kvp);
+                }
+            }
+        }
+        return result;
     }
 
     public IMyIterator<T> GetIterator()
     {
-        throw new NotImplementedException();
+        return new MyHashmapIterator<T>(_buckets);
     }
 
     public IEnumerator<T> GetEnumerator()
     {
-        throw new NotImplementedException();
+        foreach (var bucket in _buckets)
+        {
+            if (bucket != null)
+            {
+                foreach (var kvp in bucket)
+                {
+                    yield return kvp;
+                }
+            }
+        }
     }
-
 }
+
+
