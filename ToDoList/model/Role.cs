@@ -10,7 +10,10 @@ public class Role : iDatabase, IComparable<Role>
 
     public int CompareTo(Role? other)
     {
-        throw new NotImplementedException();
+        if (other == null) return 1;
+        int compare = CreatePremission.CompareTo(other.CreatePremission);
+        if (compare != 0) return compare;
+        return ClosePremission.CompareTo(other.ClosePremission);
     }
 
     public string ToSQLDelete()

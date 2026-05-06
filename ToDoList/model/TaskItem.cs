@@ -82,6 +82,11 @@ public class TaskItem : iDatabase, IComparable<TaskItem>
 
     public int CompareTo(TaskItem? other)
     {
-        throw new NotImplementedException();
+        if (other == null) return 1;
+        int cmp = Priority_Int.CompareTo(other.Priority_Int);
+        if (cmp != 0) return cmp;
+        cmp = Status_Int.CompareTo(other.Status_Int);
+        if (cmp != 0) return cmp;
+        return CreateDateTime.CompareTo(other.CreateDateTime);
     }
 }

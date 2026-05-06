@@ -21,7 +21,8 @@ public class User : iDatabase, IComparable<User>
 
     public int CompareTo(User? other)
     {
-        throw new NotImplementedException();
+        if (other == null) return 1;
+        return string.Compare(Username, other.Username);
     }
 
     public string ToSQLDelete()
