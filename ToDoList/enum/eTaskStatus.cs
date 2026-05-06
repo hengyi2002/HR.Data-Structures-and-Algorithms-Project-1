@@ -31,6 +31,7 @@ public class TaskStatus {
     }
 
     //Constructors
+    public TaskStatus(): this(FromInt(0)) { }
     public TaskStatus(int status=0): this(FromInt(status)) { }
 
     public TaskStatus(string status="low"): this(FromString(status)) { }

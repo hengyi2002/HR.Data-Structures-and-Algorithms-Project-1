@@ -30,6 +30,7 @@ public class TaskItem : iDatabase, IComparable<TaskItem>
     // {
         
     // }
+    public TaskItem() {}
 
     public TaskItem(int id, string title, string description, int priority, int status, int? teamID, int? userID, string createDateTime, string updateDateTime) 
     : this(id, title, description, new TaskPriority(priority), new TaskStatus(status), teamID, userID, Utilities.DTFromSTR(createDateTime), Utilities.DTFromSTR(updateDateTime))

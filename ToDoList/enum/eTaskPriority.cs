@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Spectre.Console;
 
 public enum eTaskPriority
@@ -7,6 +8,7 @@ public enum eTaskPriority
     High
 }
 
+[Keyless]
 public class TaskPriority
 {
     public eTaskPriority eTaskPriority { get; }
@@ -29,6 +31,7 @@ public class TaskPriority
     }
     
     //Constructors
+    public TaskPriority(): this(FromInt(0)) { }
     public TaskPriority(int prio=0): this(FromInt(prio)) { }
 
     public TaskPriority(string prio="low"): this(FromString(prio)) { }
