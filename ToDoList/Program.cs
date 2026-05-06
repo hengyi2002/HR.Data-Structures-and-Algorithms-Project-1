@@ -8,11 +8,12 @@
 
     public static User? appUser = null;
 
+    public static eIMycollectionType collectionType;
+
     public static void Main()
     {
         int implementation = MenuView.SelectImplementation();
-
-        //Implementation selection implementation
+        collectionType = (eIMycollectionType)implementation;
 
         bool ExitProgram = false;
         int attempts = 0;

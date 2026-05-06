@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "GffwMuFQ+eM=",
+  "dgSpecHash": "qOrW5nc9+7k=",
   "success": true,
   "projectFilePath": "/Users/dannydesnoo/Documents/GitHub/HR.Data-Structures-and-Algorithms-Project-1/ToDoList/ToDoList.csproj",
   "expectedPackageFiles": [
@@ -21,7 +21,8 @@
     "/Users/dannydesnoo/.nuget/packages/microsoft.extensions.logging.abstractions/10.0.4/microsoft.extensions.logging.abstractions.10.0.4.nupkg.sha512",
     "/Users/dannydesnoo/.nuget/packages/microsoft.extensions.options/10.0.4/microsoft.extensions.options.10.0.4.nupkg.sha512",
     "/Users/dannydesnoo/.nuget/packages/microsoft.extensions.primitives/10.0.4/microsoft.extensions.primitives.10.0.4.nupkg.sha512",
-    "/Users/dannydesnoo/.nuget/packages/spectre.console/0.54.0/spectre.console.0.54.0.nupkg.sha512",
+    "/Users/dannydesnoo/.nuget/packages/spectre.console/0.55.2/spectre.console.0.55.2.nupkg.sha512",
+    "/Users/dannydesnoo/.nuget/packages/spectre.console.ansi/0.55.2/spectre.console.ansi.0.55.2.nupkg.sha512",
     "/Users/dannydesnoo/.nuget/packages/sqlitepclraw.bundle_e_sqlite3/2.1.11/sqlitepclraw.bundle_e_sqlite3.2.1.11.nupkg.sha512",
     "/Users/dannydesnoo/.nuget/packages/sqlitepclraw.core/2.1.11/sqlitepclraw.core.2.1.11.nupkg.sha512",
     "/Users/dannydesnoo/.nuget/packages/sqlitepclraw.lib.e_sqlite3/2.1.11/sqlitepclraw.lib.e_sqlite3.2.1.11.nupkg.sha512",
